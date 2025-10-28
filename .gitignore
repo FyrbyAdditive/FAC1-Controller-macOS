@@ -1,0 +1,10 @@
+.vscode/
+.build/
+.swiftpm/
+*.xcodeproj
+*.xcworkspace
+.DS_Store
+xcuserdata/
+DerivedData/
+FAC1 Controller.app/
+FAC1-Controller.dmg
