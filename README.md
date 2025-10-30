@@ -2,7 +2,7 @@
 
 A minimal macOS application for controlling pan and tilt servos for the [FAC1 Camera](https://www.printables.com/model/1463101-fac1-fyrby-additive-camera-1/).
 
-![alt text](/Media/FAC1-Camera.png "FAC1 Camera")
+![alt text](https://github.com/FyrbyAdditive/FAC1-Controller-macOS/raw/refs/heads/main/Media/FAC1-Camera.png "FAC1 Camera")
 
 ## Features
 
@@ -15,12 +15,12 @@ This controller is built using a native, no-nonsense, minimal Swift application,
 - **Always on Top**: Optional window mode to keep the controller always visible
 - **Minimal Interface**: Simple arrow button controls (↑ ↓ o ← →)
 
-![alt text](/Media/FAC1-Controller-Banner.png "FAC1 Camera")
+![alt text](https://github.com/FyrbyAdditive/FAC1-Controller-macOS/raw/refs/heads/main/Media/FAC1-Controller-Banner.png "FAC1 Camera Controller")
 
 ## Requirements
 
 - macOS 14.0 or later in theory
-- FAC1 Camera
+- [FAC1 Camera](https://www.printables.com/model/1463101-fac1-fyrby-additive-camera-1/)
 
 ## Building
 
@@ -111,24 +111,7 @@ ls /dev/cu.*
 # The app will try to use cu.usbserial* or cu.usbmodem* devices
 ```
 
-## Project Structure
-
-```
-FAC1 - macOS Controller/
-├── Package.swift              # Swift package configuration
-├── Sources/
-│   ├── main.swift            # Application entry point
-│   ├── AppDelegate.swift     # macOS app lifecycle
-│   ├── ViewController.swift  # Main UI controller
-│   └── ServoController.swift # Servo communication logic
-└── README.md
-```
-
-## License
-
-This project uses the Feetech Servo SDK for Swift.
-
 ## Credits
+This project uses the [Feetech Servo SDK](https://github.com/FyrbyAdditive/feetech-servo-sdk-swift) for Swift.
 
-- Feetech Servo SDK: https://github.com/FyrbyAdditive/feetech-servo-sdk-swift
-
+_Copyright 2025, Timothy Ellis, Fyrby Additive Manufacturing & Engineering_ 
