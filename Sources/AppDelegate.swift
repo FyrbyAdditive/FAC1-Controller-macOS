@@ -27,9 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     private func setupMenuBar() {
         let mainMenu = NSMenu()
-        let appMenuItems = NSMenu()
         
-        // Create app menu with Quit option
+        // App menu
+        let appMenuItems = NSMenu()
         let appMenuItem = NSMenuItem(title: "App", action: nil, keyEquivalent: "")
         appMenuItem.submenu = appMenuItems
         
@@ -37,7 +37,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         appMenuItems.addItem(quitItem)
         
         mainMenu.addItem(appMenuItem)
+        
+        // Calibration menu
+        let calibrationMenuItems = NSMenu(title: "Calibration")
+        let calibrationMenuItem = NSMenuItem(title: "Calibration", action: nil, keyEquivalent: "")
+        calibrationMenuItem.submenu = calibrationMenuItems
+        
+        let calibrateItem = NSMenuItem(title: "Calibrate Center Position", action: #selector(openCalibration), keyEquivalent: "k")
+        calibrationMenuItems.addItem(calibrateItem)
+        
+        mainMenu.addItem(calibrationMenuItem)
+        
         NSApplication.shared.mainMenu = mainMenu
+    }
+    
+    @objc private func openCalibration() {
+        guard let servoController = viewController?.servoController else { return }
+        
+        let calibrationVC = CalibrationViewController(servoController: servoController)
+        
+        // Present as sheet
+        viewController.presentAsSheet(calibrationVC)
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

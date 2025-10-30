@@ -13,13 +13,13 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/FyrbyAdditive/feetech-servo-sdk-swift.git", branch: "main")
+        .package(path: "../feetech-servo-swift/SCServoSwift")
     ],
     targets: [
         .executableTarget(
             name: "FAC1-Controller",
             dependencies: [
-                .product(name: "SCServoSDK", package: "feetech-servo-sdk-swift")
+                .product(name: "SCServoSDK", package: "SCServoSwift")
             ],
             path: "Sources"
         )

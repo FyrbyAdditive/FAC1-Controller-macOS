@@ -1,7 +1,7 @@
 import Cocoa
 
 class ViewController: NSViewController, NSTextFieldDelegate {
-    private var servoController: ServoController!
+    var servoController: ServoController!
     
     // UI Elements
     private var statusIndicator: NSView!

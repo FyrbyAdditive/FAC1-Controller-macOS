@@ -25,6 +25,7 @@ class ServoController {
     
     // Movement parameters
     private let positionStep: UInt16 = 100  // How much to move per button press
+    private let centerPosition: UInt16 = 2048  // Center after calibration
     private let minPosition: UInt16 = 0     // Full 360-degree range
     private let maxPosition: UInt16 = 4095  // Full 360-degree range
     private let movingSpeed: UInt16 = 200  // Moderate speed
@@ -359,18 +360,32 @@ class ServoController {
             return
         }
         
-        // Calculate new position with safe arithmetic
+        // Read current position first
+        let (currentPos, readResult, readError) = handler.read2ByteTxRx(
+            port,
+            servoId: panServoId,
+            address: ControlTableAddress.presentPosition
+        )
+        
+        guard readResult == .success && readError.isEmpty else {
+            print("Failed to read pan position")
+            return
+        }
+        
+        // Calculate new position, limiting to center ± 2048 (180° each way)
         let newPosition: UInt16
         switch direction {
         case .left:
-            if currentPanPosition > positionStep {
-                newPosition = currentPanPosition - positionStep
+            // Don't go below center - 2048 = 0
+            if currentPos > positionStep {
+                newPosition = max(0, currentPos - positionStep)
             } else {
-                newPosition = minPosition
+                newPosition = 0
             }
         case .right:
-            let potential = UInt32(currentPanPosition) + UInt32(positionStep)
-            newPosition = potential > UInt32(maxPosition) ? maxPosition : UInt16(potential)
+            // Don't go above center + 2047 = 4095
+            let potential = currentPos + positionStep
+            newPosition = min(4095, potential)
         }
         
         // Send position command
@@ -395,17 +410,31 @@ class ServoController {
             return
         }
         
-        // Calculate new position with safe arithmetic
+        // Read current position first
+        let (currentPos, readResult, readError) = handler.read2ByteTxRx(
+            port,
+            servoId: tiltServoId,
+            address: ControlTableAddress.presentPosition
+        )
+        
+        guard readResult == .success && readError.isEmpty else {
+            print("Failed to read tilt position")
+            return
+        }
+        
+        // Calculate new position, limiting to center ± 2048 (180° each way)
         let newPosition: UInt16
         switch direction {
         case .up:
-            let potential = UInt32(currentTiltPosition) + UInt32(positionStep)
-            newPosition = potential > UInt32(maxPosition) ? maxPosition : UInt16(potential)
+            // Don't go above center + 2047 = 4095
+            let potential = currentPos + positionStep
+            newPosition = min(4095, potential)
         case .down:
-            if currentTiltPosition > positionStep {
-                newPosition = currentTiltPosition - positionStep
+            // Don't go below center - 2048 = 0
+            if currentPos > positionStep {
+                newPosition = max(0, currentPos - positionStep)
             } else {
-                newPosition = minPosition
+                newPosition = 0
             }
         }
         
@@ -423,5 +452,91 @@ class ServoController {
         } else {
             print("Failed to move tilt: \(result.description)")
         }
+    }
+    
+    // MARK: - Calibration Methods
+    
+    func disableTorque() {
+        guard let port = portHandler, let handler = packetHandler else { return }
+        
+        print("Disabling torque on both servos...")
+        
+        // Disable pan servo
+        let (panResult, _) = handler.write1ByteTxRx(
+            port,
+            servoId: panServoId,
+            address: ControlTableAddress.torqueEnable,
+            data: 0
+        )
+        print("Pan servo torque disabled: \(panResult.description)")
+        
+        // Disable tilt servo
+        let (tiltResult, _) = handler.write1ByteTxRx(
+            port,
+            servoId: tiltServoId,
+            address: ControlTableAddress.torqueEnable,
+            data: 0
+        )
+        print("Tilt servo torque disabled: \(tiltResult.description)")
+    }
+    
+    func enableTorque() {
+        guard let port = portHandler, let handler = packetHandler else { return }
+        
+        print("Enabling torque on both servos...")
+        
+        // Enable pan servo
+        let (panResult, _) = handler.write1ByteTxRx(
+            port,
+            servoId: panServoId,
+            address: ControlTableAddress.torqueEnable,
+            data: 1
+        )
+        print("Pan servo torque enabled: \(panResult.description)")
+        
+        // Enable tilt servo
+        let (tiltResult, _) = handler.write1ByteTxRx(
+            port,
+            servoId: tiltServoId,
+            address: ControlTableAddress.torqueEnable,
+            data: 1
+        )
+        print("Tilt servo torque enabled: \(tiltResult.description)")
+    }
+    
+    func calibrateCenter() -> Bool {
+        guard let port = portHandler, let handler = packetHandler else { return false }
+        
+        print("\n=== Starting calibration ===")
+        
+        // For STS servos, write 128 to torque enable register to calibrate current position to 2048
+        // This is the proper way to calibrate - don't use the offset register
+        print("Calibrating servos using torque enable method...")
+        
+        // Write 128 to torque enable for pan servo
+        let (panResult, panError) = handler.write1ByteTxRx(
+            port,
+            servoId: panServoId,
+            address: ControlTableAddress.torqueEnable,
+            data: 128
+        )
+        
+        print("Pan calibration result: \(panResult.description), error: \(panError)")
+        
+        // Write 128 to torque enable for tilt servo
+        let (tiltResult, tiltError) = handler.write1ByteTxRx(
+            port,
+            servoId: tiltServoId,
+            address: ControlTableAddress.torqueEnable,
+            data: 128
+        )
+        
+        print("Tilt calibration result: \(tiltResult.description), error: \(tiltError)")
+        
+        // Just check if commands were sent - don't fail on communication errors
+        // The servos will complete calibration even if we don't get a response
+        print("Calibration commands sent")
+        
+        return true
     }
 }
