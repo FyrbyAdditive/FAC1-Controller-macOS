@@ -31,6 +31,17 @@ class ServoController {
     private let movingSpeed: UInt16 = 200  // Moderate speed
     private let movingAcc: UInt8 = 50
     
+    // Inversion settings (persisted)
+    var invertPan: Bool {
+        get { UserDefaults.standard.bool(forKey: "invertPan") }
+        set { UserDefaults.standard.set(newValue, forKey: "invertPan") }
+    }
+    
+    var invertTilt: Bool {
+        get { UserDefaults.standard.bool(forKey: "invertTilt") }
+        set { UserDefaults.standard.set(newValue, forKey: "invertTilt") }
+    }
+    
     var isConnected: Bool {
         guard let port = portHandler, port.isOpen else { return false }
         // Just check if USB is open - report servo status separately via connectionStatus
@@ -372,9 +383,12 @@ class ServoController {
             return
         }
         
+        // Apply inversion if enabled (pan servo is physically reversed by default)
+        let effectiveDirection: PanDirection = invertPan ? direction : (direction == .left ? .right : .left)
+        
         // Calculate new position, limiting to center ± 2048 (180° each way)
         let newPosition: UInt16
-        switch direction {
+        switch effectiveDirection {
         case .left:
             // Don't go below center - 2048 = 0
             if currentPos > positionStep {
@@ -422,9 +436,12 @@ class ServoController {
             return
         }
         
+        // Apply inversion if enabled
+        let effectiveDirection: TiltDirection = invertTilt ? (direction == .up ? .down : .up) : direction
+        
         // Calculate new position, limiting to center ± 2048 (180° each way)
         let newPosition: UInt16
-        switch direction {
+        switch effectiveDirection {
         case .up:
             // Don't go above center + 2047 = 4095
             let potential = currentPos + positionStep
