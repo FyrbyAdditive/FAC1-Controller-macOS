@@ -10,8 +10,8 @@ class AboutViewController: NSViewController {
         let logoView = NSImageView(frame: NSRect(x: 125, y: 220, width: 150, height: 150))
         logoView.imageScaling = .scaleProportionallyUpOrDown
         
-        // Load logo from project root
-        let logoPath = FileManager.default.currentDirectoryPath + "/FAME-150-150.png"
+        // Load logo from Media folder
+        let logoPath = FileManager.default.currentDirectoryPath + "/Media/FAME-150-150.png"
         if let logo = NSImage(contentsOfFile: logoPath) {
             logoView.image = logo
         } else {

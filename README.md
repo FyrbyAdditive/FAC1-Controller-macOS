@@ -1,21 +1,26 @@
 # FAC1 - Pan & Tilt Controller
 
-A minimal macOS application for controlling pan and tilt servos using the Feetech servo SDK.
+A minimal macOS application for controlling pan and tilt servos for the [FAC1 Camera](https://www.printables.com/model/1463101-fac1-fyrby-additive-camera-1/).
+
+![alt text](/Media/FAC1-Camera.png "FAC1 Camera")
 
 ## Features
+
+This controller is built using a native, no-nonsense, minimal Swift application, for which you can find the source code in this repository.
 
 - **Automatic USB-Serial Detection**: Automatically finds and connects to USB-serial devices
 - **Dual Servo Control**: Controls pan and tilt servos (hardcoded IDs: pan=6, tilt=4)
 - **Connection Status**: Detailed status reporting for USB and individual servo connections
+- **Calibration**: Calibrate the center point of the servos and toggle axis inversion to your liking
 - **Always on Top**: Optional window mode to keep the controller always visible
-- **Minimal Interface**: Simple arrow button controls (↑ ↓ ← →)
+- **Minimal Interface**: Simple arrow button controls (↑ ↓ o ← →)
+
+![alt text](/Media/FAC1-Controller-Banner.png "FAC1 Camera")
 
 ## Requirements
 
-- macOS 13.0 or later
-- Swift 5.9 or later
-- Feetech SCServo motors (STS/SMS series)
-- USB-to-serial adapter
+- macOS 14.0 or later in theory
+- FAC1 Camera
 
 ## Building
 
@@ -52,6 +57,7 @@ swift run FAC1-Controller
 
 - **↑** (Up Arrow): Tilt up
 - **↓** (Down Arrow): Tilt down
+- **O** (Circular Button): Center Camera
 - **←** (Left Arrow): Pan left
 - **→** (Right Arrow): Pan right
 
@@ -125,3 +131,4 @@ This project uses the Feetech Servo SDK for Swift.
 ## Credits
 
 - Feetech Servo SDK: https://github.com/FyrbyAdditive/feetech-servo-sdk-swift
+
