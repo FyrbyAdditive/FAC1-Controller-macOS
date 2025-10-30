@@ -15,6 +15,7 @@ class ViewController: NSViewController, NSTextFieldDelegate {
     private var downButton: NSButton!
     private var leftButton: NSButton!
     private var rightButton: NSButton!
+    private var centerButton: NSButton!
     
     // Connection status update timer
     private var statusUpdateTimer: Timer?
@@ -96,6 +97,31 @@ class ViewController: NSViewController, NSTextFieldDelegate {
         rightButton.target = self
         rightButton.action = #selector(rightPressed)
         contentView.addSubview(rightButton)
+        
+        // Center button - vertically aligned with left/right buttons
+        let centerButtonSize = NSSize(width: 40, height: 40)
+        centerButton = NSButton()
+        // Left/right buttons have origin at y: centerY
+        // Their centers are at: centerY + buttonSize.height/2 = centerY + 25
+        // Center button should have same center Y, so origin should be at: centerY + 25 - centerButtonSize.height/2
+        centerButton.frame = NSRect(
+            origin: NSPoint(
+                x: centerX - centerButtonSize.width / 2,
+                y: centerY + (buttonSize.height - centerButtonSize.height) / 2
+            ),
+            size: centerButtonSize
+        )
+        centerButton.title = ""
+        centerButton.bezelStyle = .circular
+        centerButton.isBordered = true
+        centerButton.wantsLayer = true
+        centerButton.layer?.cornerRadius = 20
+        centerButton.layer?.backgroundColor = NSColor(white: 0.2, alpha: 1.0).cgColor
+        centerButton.layer?.borderColor = NSColor.systemOrange.cgColor
+        centerButton.layer?.borderWidth = 2.0
+        centerButton.target = self
+        centerButton.action = #selector(centerPressed)
+        contentView.addSubview(centerButton)
         
         // Status bar at bottom
         setupStatusBar()
@@ -196,6 +222,10 @@ class ViewController: NSViewController, NSTextFieldDelegate {
     
     @objc private func rightPressed() {
         servoController.movePan(direction: .right)
+    }
+    
+    @objc private func centerPressed() {
+        servoController.centerBoth()
     }
     
     // MARK: - NSTextFieldDelegate

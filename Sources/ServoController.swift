@@ -471,6 +471,45 @@ class ServoController {
         }
     }
     
+    func centerBoth() {
+        guard let port = portHandler, let handler = packetHandler else {
+            print("Not connected")
+            return
+        }
+        
+        print("Centering both servos to position 2048...")
+        
+        // Center pan servo
+        let (panResult, panError) = handler.write2ByteTxRx(
+            port,
+            servoId: panServoId,
+            address: ControlTableAddress.goalPosition,
+            data: centerPosition
+        )
+        
+        if panResult == .success && panError.isEmpty {
+            currentPanPosition = centerPosition
+            print("Pan centered to: \(centerPosition)")
+        } else {
+            print("Failed to center pan: \(panResult.description)")
+        }
+        
+        // Center tilt servo
+        let (tiltResult, tiltError) = handler.write2ByteTxRx(
+            port,
+            servoId: tiltServoId,
+            address: ControlTableAddress.goalPosition,
+            data: centerPosition
+        )
+        
+        if tiltResult == .success && tiltError.isEmpty {
+            currentTiltPosition = centerPosition
+            print("Tilt centered to: \(centerPosition)")
+        } else {
+            print("Failed to center tilt: \(tiltResult.description)")
+        }
+    }
+    
     // MARK: - Calibration Methods
     
     func disableTorque() {
